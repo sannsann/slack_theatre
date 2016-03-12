@@ -1,0 +1,24 @@
+<!DOCUMENT html>
+<html lang="en-us">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript" src="script.js" ></script>
+	<title>Slack Theatre</title>
+<head>
+</head>
+<body>
+	<div class="searchHeader">
+		<input type="search" name="query" id="query" value="fox" placeholder="Search" class="center" />
+		<input type="button" onclick="queryFlickr()" value="Search">
+	</div>
+		<div class="container" id="container"></div>
+
+		<div id="light" class="lb_content">
+			<img id="prev" src="prev3.png"  />
+			<div id='lightbox-content'></div>
+			<img id="next" src="next3.png"  />
+		</div>
+
+		<div id="fade" class="lb_overlay" onclick="closeLightbox()">
+	</div>
+</body>
+</html>
