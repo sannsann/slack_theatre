@@ -8,7 +8,6 @@ var queryFlickr = function() {
 	// Get the query and form URL to access Flickr API	
 	var query = document.getElementById('query').value;
 	var apiUrl = getApiUrlString(query);
-	// console.log(query);
 
 	// Clear contents after each search 
 	var container = document.getElementById('container');
@@ -33,18 +32,15 @@ var createThumbnails = function(data) {
 	var photo;
 	var thumbnail;
 
-	// Parse the response data
+	// Parse the response data and store into app namespace
 	slackTheatre.photos = JSON.parse(data).photos.photo;
-	// var obj = JSON.parse(data);
+
 	var count = slackTheatre.photos.length
-	// var count = obj.photos.photo.length
-	// console.log(slackTheatre.photos);
-	// console.log(obj);
 
 	// Create thumbnails from response data
 	for(var i=0; i<count; i++) {
 		photo = slackTheatre.photos[i];
-		// photoObj = obj.photos.photo[i];
+
 		thumbnail = createThumbnail(photo);
 		thumbnail.setAttribute('data-photoid', i);
 	    document.getElementById('container').appendChild(thumbnail);	
@@ -70,26 +66,8 @@ var lightbox = function() {
 	photoId = Number(this.getAttribute('data-photoid'));
 	console.log(photoId);
 
-	// var photoObj = slackTheatre.photos[photoId];
-	// console.log(photoObj);
-
-	// var lb = document.getElementById('light');
-
-	// var content = document.createElement("img");
-	// content.setAttribute('src', getImgUrl(photoObj));
-	// content.setAttribute('class', 'lightbox-img');
-	// content.setAttribute('data-photoid', photoId);
-	// // content.setAttribute('onmouseover', 'displayNav()');
-	// // content.setAttribute('onmouseout', 'unfade()');
-
-	// var lbContent = document.getElementById('lightbox-content');
-	// lbContent.appendChild(content);
-
-	// var rect = lbContent.getBoundingClientRect();
-	// console.log("top: "+ rect.top + " right: " + rect.right + " bottom: " + rect.bottom + " left: " + rect.left);
-
 	loadLbContent(photoId);
-	
+
 	var prevButton = document.getElementById('prev');
 	prevButton.addEventListener('click', prevImg);
 
@@ -139,6 +117,7 @@ var getImgUrl = function(photo, flag) {
 	src += ".staticflickr.com/" + photo.server;
 	src += "/" + photo.id + "_" + photo.secret; 
 
+	// Append appropriate flags to src for desired image size from server
 	if(flag) {
 		src += "_" + flag + ".jpg";
 	} else {
@@ -149,7 +128,6 @@ var getImgUrl = function(photo, flag) {
 }
 
 var clearLightbox = function() {
-
 	var lbContent = document.getElementById('lightbox-content');
 	while(lbContent.firstChild) {
 		lbContent.removeChild(lbContent.firstChild); 
@@ -166,9 +144,7 @@ var prevImg = function() {
 	console.log(photoId);
 
 	clearLightbox();
-
 	loadLbContent(photoId);
-
 }
 
 var nextImg = function() {
@@ -181,10 +157,11 @@ var nextImg = function() {
 	console.log(photoId);
 
 	clearLightbox();
-
 	loadLbContent(photoId);
 }
 
+
+/* Loads the lightbox image as well as navigation buttons */
 var loadLbContent = function(photoId) {
 
 	var photoObj = slackTheatre.photos[photoId];
@@ -196,33 +173,23 @@ var loadLbContent = function(photoId) {
 
 	var lbContent = document.getElementById('lightbox-content');
 	lbContent.appendChild(content);
-}
 
-var fade = function() {
-	console.log("We're fading...");
-}
+	// Arrived at the start of array, hide previous button to prevent further back navigation
+	if(photoId === 0) {
+		document.getElementById('prev').style.visibility = 'hidden';
+	} else {
+		document.getElementById('prev').style.visibility = 'visible';
+	}
 
-var unfade = function() {
-	console.log("And now we're unfading!");
-}
-
-var displayNav = function() {
-	// Create a span to overlay on top
-	// var arrow = document.createElement("img");
-
-	// arrow.setAttribute('src', 'right.png');
-	// arrow.setAttribute('id', 'nav');
-
-	// document.getElementsByClassName('lightbox-img')[0].appendChild(arrow);
-}
-
-var hideNav = function() {
-	var nav = document.getElementById('nav');
-
-	if (nav != null) {
-		nav.parentElement.removeChild(0);
+	// Reached the end of array, hide the next button to prevent further forward navigation
+	if(photoId === slackTheatre.photos.length - 1) {
+		document.getElementById('next').style.visibility = 'hidden';
+	} else {
+		document.getElementById('next').style.visibility = 'visible';
 	}
 }
+
+
 
 
 var imgHeight;
