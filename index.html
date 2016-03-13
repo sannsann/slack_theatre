@@ -1,24 +1,30 @@
 <!DOCUMENT html>
 <html lang="en-us">
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<script type="text/javascript" src="script.js" ></script>
+<head>	
+	<meta description="Technical exercise, Slack frontend">
+
 	<title>Slack Theatre</title>
-<head>
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link id="favicon" rel='shortcut icon' href='./images/favicon.png' type="image/png"/ >
+	<script type="text/javascript" src="script.js" ></script>
 </head>
 <body>
 	<div class="searchHeader">
-		<input type="search" name="query" id="query" value="fox" placeholder="Search" class="center" />
-		<input type="button" onclick="queryFlickr()" value="Search">
-	</div>
-		<div class="container" id="container"></div>
-
-		<div id="light" class="lb_content">
-			<img id="prev" src="./images/prev.png"  />
-			<div id='lightbox-content'></div>
-			<img id="next" src="./images/next.png"  />
+		<div class="search-tool">
+			<input type="search" name="query" id="search-query" placeholder="Search me!" class="center" />
+			<input type="button" class="search-button" onclick="queryFlickr()" value="Search">
 		</div>
-
-		<div id="fade" class="lb_overlay" onclick="closeLightbox()">
 	</div>
+	
+	<div class="container" id="container"></div>
+
+	<div id="light" class="lb-content">
+		<img id="prev" class="nav nav-prev" src="./images/prev.png"  />
+		<div id='lightbox-content'></div>
+		<img id="next" class="nav nav-next"src="./images/next.png"  />
+	</div>
+
+	<div id="fade" class="lb-overlay" onclick="closeLightbox()"></div>
 </body>
 </html>

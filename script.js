@@ -6,7 +6,7 @@ var slackTheatre = {
 
 var queryFlickr = function() {
 	// Get the query and form URL to access Flickr API	
-	var query = document.getElementById('query').value;
+	var query = document.getElementById('search-query').value;
 	var apiUrl = getApiUrlString(query);
 
 	// Clear contents after each search 
@@ -43,14 +43,20 @@ var createThumbnails = function(data) {
 
 		thumbnail = createThumbnail(photo);
 		thumbnail.setAttribute('data-photoid', i);
-	    document.getElementById('container').appendChild(thumbnail);	
+
+		var thumbwrapper = document.createElement('div');
+		thumbwrapper.setAttribute('class', 'thumbnail-wrapper');
+
+		thumbwrapper.appendChild(thumbnail);
+
+	    document.getElementById('container').appendChild(thumbwrapper);	
 	}
 }
 
 var createThumbnail = function(photoObj) {
 	var thumbnail = document.createElement("img");
 
-	thumbnail.setAttribute('src', getImgUrl(photoObj, 'q'));
+	thumbnail.setAttribute('src', getImgUrl(photoObj, 'n'));
 	thumbnail.setAttribute('alt', photoObj.title);
 	thumbnail.setAttribute('class', 'thumbnail');
 
@@ -60,10 +66,10 @@ var createThumbnail = function(photoObj) {
 }
 
 var lightbox = function() {
-	document.getElementById('light').style.display='block';
-	document.getElementById('fade').style.display='block';
+	document.getElementById('light').style.display = 'block';
+	document.getElementById('fade').style.display = 'block';
 
-	photoId = Number(this.getAttribute('data-photoid'));
+	var photoId = Number(this.getAttribute('data-photoid'));
 	console.log(photoId);
 
 	loadLbContent(photoId);
@@ -73,16 +79,15 @@ var lightbox = function() {
 
 	var nextButton = document.getElementById('next');
 	nextButton.addEventListener('click', nextImg);
-
 }
 
 var closeLightbox = function() {
 	console.log("Closing lightbox...");
 
-	document.getElementById('light').style.display='none';
-	document.getElementById('fade').style.display='none';
-
 	clearLightbox();
+
+	document.getElementById('light').style.display = 'none';
+	document.getElementById('fade').style.display = 'none';
 }
 
 var getApiUrlString = function(query) {
@@ -137,26 +142,23 @@ var clearLightbox = function() {
 var prevImg = function() {
 	console.log('Loading previous image...');
 
-	var lbContent = document.getElementsByClassName('lightbox-img')[0];
-	console.log(lbContent);
-
-	var photoId = Number(lbContent.getAttribute('data-photoid')) - 1;
-	console.log(photoId);
 
 	clearLightbox();
+
+	var lbContent = document.getElementsByClassName('lightbox-img')[0];
+	var photoId = Number(lbContent.getAttribute('data-photoid')) - 1;
+
 	loadLbContent(photoId);
 }
 
 var nextImg = function() {
 	console.log('Loading next image...');
 
-	var lbContent = document.getElementsByClassName('lightbox-img')[0];
-	console.log(lbContent);
-
-	var photoId = Number(lbContent.getAttribute('data-photoid')) + 1;
-	console.log(photoId);
-
 	clearLightbox();
+
+	var lbContent = document.getElementsByClassName('lightbox-img')[0];
+	var photoId = Number(lbContent.getAttribute('data-photoid')) + 1;
+
 	loadLbContent(photoId);
 }
 
@@ -164,47 +166,35 @@ var nextImg = function() {
 /* Loads the lightbox image as well as navigation buttons */
 var loadLbContent = function(photoId) {
 
+	// Clear any residual lb_content
+	clearLightbox();
+
 	var photoObj = slackTheatre.photos[photoId];
 	console.log(photoObj);
+	
 	var content = document.createElement("img");
-	content.setAttribute('src', getImgUrl(photoObj));
+	content.setAttribute('src', getImgUrl(photoObj, 'c'));
 	content.setAttribute('class', 'lightbox-img');
 	content.setAttribute('data-photoid', photoId);
 
 	var lbContent = document.getElementById('lightbox-content');
 	lbContent.appendChild(content);
 
+	var prevButton = document.getElementById('prev');
+	var nextButton = document.getElementById('next');
+
 	// Arrived at the start of array, hide previous button to prevent further back navigation
 	if(photoId === 0) {
-		document.getElementById('prev').style.visibility = 'hidden';
+		prevButton.style.visibility = 'hidden';
 	} else {
-		document.getElementById('prev').style.visibility = 'visible';
+		prevButton.visibility = 'visible';
 	}
 
 	// Reached the end of array, hide the next button to prevent further forward navigation
 	if(photoId === slackTheatre.photos.length - 1) {
-		document.getElementById('next').style.visibility = 'hidden';
+		nextButton.style.visibility = 'hidden';
 	} else {
-		document.getElementById('next').style.visibility = 'visible';
+		nextButton.style.visibility = 'visible';
 	}
-}
 
-
-
-
-var imgHeight;
-var imgWidth;
-
-var findHHandWW = function() {
-	imgHeight = this.height;
-	imgWidth = this.width;
-	return true;
-}
-
-var showImage = function(imgPath) {
-	var myImage = new Image();
-
-	myImage.name = imgPath;
-	myImage.onload = findHHandWW;
-	myImage.src = imgPath;
 }
