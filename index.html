@@ -13,17 +13,17 @@
 <body>
 	<div class="searchHeader">
 		<div class="search-tool">
-			<input type="search" name="query" id="search-query" placeholder="Search me!" class="center" />
+			<input type="search" name="query" id="search-query" placeholder="Search me!" class="center" value="fish" />
 			<input type="button" class="search-button" onclick="queryFlickr()" value="Search">
 		</div>
 	</div>
 	
 	<div class="container" id="container"></div>
 
-	<div id="light" class="lb-content">
-		<img id="prev" class="nav nav-prev" src="./images/prev.png"  />
-		<div id='lightbox-content'></div>
-		<img id="next" class="nav nav-next"src="./images/next.png"  />
+	<div id="light" class="lb-content center-vertical">
+		<img id="prev" class="nav nav-prev center-vertical" src="./images/prev.png"  />
+		<div id='lightbox-content' ></div>
+		<img id="next" class="nav nav-next center-vertical" src="./images/next.png"  />
 	</div>
 
 	<div id="fade" class="lb-overlay" onclick="closeLightbox()"></div>
