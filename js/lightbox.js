@@ -6,14 +6,23 @@ var slackTheatre = {
 
 var queryFlickr = function() {
 	// Get the query and form URL to access Flickr API	
-	var query = document.getElementById('search-query').value;
-	var apiUrl = getApiUrlString(query);
+	
+	var apiUrl; 
 
-	// Clear contents after each search 
-	var container = document.getElementById('container');
-	while(container.firstChild) {
-		container.removeChild(container.firstChild); 
+	var queryBox = document.getElementById('search-query');
+	
+	// Validate that a search query was received.
+	if(queryBox.value == undefined || queryBox.value == '') {
+		console.log('undefined query value. We will not be searching');
+		queryBox.style.backgroundColor = '#FFFF99';
+		queryBox.style.placeholder = "We'll need something here :)";
+		return;
+	} else {
+		apiUrl = getApiUrlString(queryBox.value);
 	}
+	
+	// Clear contents after each search 
+	clearLightbox();
 
 	xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -56,7 +65,7 @@ var createThumbnails = function(data) {
 var createThumbnail = function(photoObj) {
 	var thumbnail = document.createElement("img");
 
-	thumbnail.setAttribute('src', getImgUrl(photoObj, 'n'));
+	thumbnail.setAttribute('src', getImgUrlString(photoObj, 'n'));
 	thumbnail.setAttribute('alt', photoObj.title);
 	thumbnail.setAttribute('class', 'thumbnail');
 
@@ -90,47 +99,7 @@ var closeLightbox = function() {
 	document.getElementById('fade').style.display = 'none';
 }
 
-var getApiUrlString = function(query) {
 
-	// Base URL for our API call
-	var apiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
-
-	// Required API key to be sent with request.
-	apiUrl += "&api_key=" + slackTheatre.key;
-
-	// Specify the number of returned results.
-	apiUrl += "&per_page=10";
-
-	// Request the response to return as JSON. 
-	apiUrl += "&format=json";
-
-	// Add this option to return only the JSON (minus the function wrapper)
-	apiUrl += "&nojsoncallback=1";
-
-	// Append the search query from our input box.
-	apiUrl += "&tags=" + query;
-
-	return apiUrl;
-}
-
-var getImgUrl = function(photo, flag) {
-	// URL template for retriving an image from photo object.
-	// https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
-	var src = '';
-
-	src += "https://farm" + photo.farm;
-	src += ".staticflickr.com/" + photo.server;
-	src += "/" + photo.id + "_" + photo.secret; 
-
-	// Append appropriate flags to src for desired image size from server
-	if(flag) {
-		src += "_" + flag + ".jpg";
-	} else {
-		src += ".jpg";
-	}
-
-	return src;
-}
 
 var clearLightbox = function() {
 	var lbContent = document.getElementById('lightbox-content');
@@ -142,23 +111,20 @@ var clearLightbox = function() {
 var prevImg = function() {
 	console.log('Loading previous image...');
 
-
-	clearLightbox();
-
 	var lbContent = document.getElementsByClassName('lightbox-img')[0];
 	var photoId = Number(lbContent.getAttribute('data-photoid')) - 1;
 
+	clearLightbox();
 	loadLbContent(photoId);
 }
 
 var nextImg = function() {
 	console.log('Loading next image...');
 
-	clearLightbox();
-
 	var lbContent = document.getElementsByClassName('lightbox-img')[0];
 	var photoId = Number(lbContent.getAttribute('data-photoid')) + 1;
 
+	clearLightbox();
 	loadLbContent(photoId);
 }
 
@@ -173,7 +139,7 @@ var loadLbContent = function(photoId) {
 	console.log(photoObj);
 	
 	var content = document.createElement("img");
-	content.setAttribute('src', getImgUrl(photoObj, 'c'));
+	content.setAttribute('src', getImgUrlString(photoObj, 'c'));
 	content.setAttribute('class', 'lightbox-img');
 	content.setAttribute('data-photoid', photoId);
 
@@ -187,7 +153,7 @@ var loadLbContent = function(photoId) {
 	if(photoId === 0) {
 		prevButton.style.visibility = 'hidden';
 	} else {
-		prevButton.visibility = 'visible';
+		prevButton.style.visibility = 'visible';
 	}
 
 	// Reached the end of array, hide the next button to prevent further forward navigation
@@ -196,5 +162,4 @@ var loadLbContent = function(photoId) {
 	} else {
 		nextButton.style.visibility = 'visible';
 	}
-
 }

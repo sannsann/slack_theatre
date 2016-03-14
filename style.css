@@ -34,7 +34,7 @@ input[type="search"]::-webkit-search-results-decoration {
     font-size: 12px;
     line-height: 1;
     color: #292f33;
-    border: 1px solid #eee;
+    border: 3px solid #eee;
     border-radius: 16px;
     transition: all .2s ease-in-out;
 }
