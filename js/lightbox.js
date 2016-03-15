@@ -2,6 +2,12 @@
 var slackTheatre = {
 	key: "83396268239eeacdafdf592b8d16a83d",
 	photos:  [],
+	emptyResultsResponses: [
+		"Our image sniffing hogs couldn't find any images you asked for. <br>In other news we'll be having bacon tonight!",
+		"The union robots are on lunch break. <br>That might explain our lack of image results...",
+		"I find the lack of image responses... <br>Disturbing...",
+		"What in tarnation happened to all the pretty pictures? <br>Guess we'll have to try some other terms to search."
+	]
 }
 
 var queryFlickr = function() {
@@ -18,9 +24,11 @@ var queryFlickr = function() {
 	// Validate that a search query was received.
 	if(queryBox.value == undefined || queryBox.value == '') {
 		console.log('undefined query value. We will not be searching');
-		queryBox.style.backgroundColor = '#FFFF99';
+		// queryBox.style.backgroundColor = '#FFFF99';
+		lengthenQuerybox();
 		return;
 	} else {
+		shortenQuerybox();
 		apiUrl = getApiUrlString(queryBox.value);
 	}
 
@@ -43,37 +51,60 @@ var createThumbnails = function(data) {
 
 	// Parse the response data and store into app namespace
 	slackTheatre.photos = JSON.parse(data).photos.photo;
+	console.log(slackTheatre.photos);
 
 	var count = slackTheatre.photos.length
 
-	// Create thumbnails from response data
-	for(var i=0; i<count; i++) {
-		photo = slackTheatre.photos[i];
+	// Search may have not returned any items. In that case, we need to tell the user
+	if (count == 0) {
+		// Results came up empty, let's give the user something entertaining to read instead.
+		var emptyResponseContainer = document.createElement('div');
+		emptyResponseContainer.setAttribute('class', 'empty');
 
-		// Create the img
-		thumbnailImg = createThumbnailImg(photo);
-		thumbnailImg.setAttribute('data-photoid', i);
-		thumbnailImg.addEventListener('mouseover', showThumbTitle);
-		thumbnailImg.addEventListener('mouseout', hideThumbTitle);
+		emptyResponseContainer.style.border = '8px dashed #eee';
+		emptyResponseContainer.style.textAlign = 'center';
+		emptyResponseContainer.style.height = '50%';
 
-		// Create the text title
-		var thumbTitle = document.createElement('p');
-		thumbTitle.setAttribute('class', 'thumbnail-title bottom');		
 
-		if(photo.title.length > 20) {
-			thumbTitle.innerHTML = photo.title.substring(0, 16) + "...";
-		} else {
-			thumbTitle.innerHTML = photo.title;
+		var emptyResponseText = document.createElement('p');
+		emptyResponseText.setAttribute('class', 'empty');
+		var randomInt = Math.floor((Math.random() * slackTheatre.emptyResultsResponses.length));
+		emptyResponseText.innerHTML = slackTheatre.emptyResultsResponses[randomInt];
+
+		emptyResponseContainer.appendChild(emptyResponseText);
+
+		document.getElementById('container').appendChild(emptyResponseContainer);	
+	} else {
+		// Create thumbnails from response data
+		for(var i=0; i<count; i++) {
+			photo = slackTheatre.photos[i];
+
+			// Create the img thumbnail
+			thumbnailImg = createThumbnailImg(photo);
+			thumbnailImg.setAttribute('data-photoid', i);
+			thumbnailImg.addEventListener('mouseover', showThumbTitle);
+			thumbnailImg.addEventListener('mouseout', hideThumbTitle);
+
+			// Create the text title
+			var thumbTitle = document.createElement('p');
+			thumbTitle.setAttribute('class', 'thumbnail-title bottom');		
+
+			if(photo.title.length > 20) {
+				thumbTitle.innerHTML = photo.title.substring(0, 16) + "...";
+			} else {
+				thumbTitle.innerHTML = photo.title;
+			}
+
+			var thumbwrapper = document.createElement('div');
+			thumbwrapper.setAttribute('class', 'thumbnail-wrapper');
+
+			thumbwrapper.appendChild(thumbnailImg);
+			thumbwrapper.appendChild(thumbTitle);
+
+		    document.getElementById('container').appendChild(thumbwrapper);	
 		}
-
-		var thumbwrapper = document.createElement('div');
-		thumbwrapper.setAttribute('class', 'thumbnail-wrapper');
-
-		thumbwrapper.appendChild(thumbnailImg);
-		thumbwrapper.appendChild(thumbTitle);
-
-	    document.getElementById('container').appendChild(thumbwrapper);	
 	}
+	
 }
 
 var createThumbnailImg = function(photoObj) {
@@ -190,27 +221,49 @@ var loadLbContent = function(photoId) {
 	}
 }
 
-// var showThumbTitle = function() {
-// 	console.log('Showing the thumbnail title');
-// 	console.log(this);
-
-// 	var myTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
-// 	myTitle.style.visibility = 'visible';
-
-// }
-
 var showThumbTitle = function() {
-	console.log('Showing the thumbnail title');
-	console.log(this);
-
 	var myTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
-
-	console.log(myTitle.classList);
 	myTitle.style.visibility = 'visible';
-
 }
 
 var hideThumbTitle = function() {
 	var myTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
 	myTitle.style.visibility = 'hidden';
+}
+
+var lengthenQuerybox = function() {
+	var queryBox = document.getElementById('search-query');
+	var pos = 200;
+	var id = setInterval(frame, 5);
+	function frame() {
+	  if (pos == 250) {
+	    clearInterval(id);
+	  } else {
+	    pos++; 
+	    queryBox.style.width = pos + 'px'; 
+	  }
+	}
+
+	queryBox.style.backgroundColor = '#FFFF99';
+}
+
+var shortenQuerybox = function() {
+	var queryBox = document.getElementById('search-query');
+	var pos = Number(queryBox.offsetWidth);
+	console.log(pos);
+	if (pos == 200) {
+		return;
+	}
+
+	var id = setInterval(frame, 5);
+	function frame() {
+	  if (pos == 200) {
+	    clearInterval(id);
+	  } else {
+	    pos--; 
+	    queryBox.style.width = pos + 'px'; 
+	  }
+	}
+
+	queryBox.style.backgroundColor = 'white';
 }

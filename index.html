@@ -5,20 +5,23 @@
 
 	<title>Slack Theatre</title>
 
-	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="./stylesheets/style.css">
 	<link id="favicon" rel='shortcut icon' href='./images/favicon.png' type="image/png"/ >
 	<script type="text/javascript" src="./js/lightbox.js"></script>
 	<script type="text/javascript" src="./js/strings.js"></script>
 </head>
 <body>
-	<div class="searchHeader">
+	<div class="header">
+		<div><img src="./images/menu.png" id="menu-button"/></div>
 		<div class="search-tool">
-			<input type="search" name="query" id="search-query" placeholder="Search me!" class="center" value="fish" />
+			<input type="search" name="query" id="search-query" placeholder="Search me!" class="center"/>
 			<input type="button" class="search-button" onclick="queryFlickr()" value="Search">
 		</div>
 	</div>
 	
-	<div class="container" id="container"></div>
+	<div class="container" id="container">
+		<div id="empty"></div>
+	</div>
 
 	<div id="light" class="lb-content center-vertical">
 		<img id="prev" class="nav nav-prev center-vertical" src="./images/prev.png"  />
