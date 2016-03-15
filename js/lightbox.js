@@ -1,3 +1,20 @@
+document.onreadystatechange = function() {
+	var queryBox;
+
+	if (document.readyState === "interactive") {
+        queryBox = document.getElementById('search-query');
+        console.log(queryBox);
+
+        if(queryBox != null) {
+        	queryBox.addEventListener('keyup', function(e) {
+        		if(e.keyCode == 13) {
+        			queryFlickr();
+        		}
+        	});
+        }
+    }
+} 
+
 // Our application object to hold variables, we don't want to polute our namespace
 var slackTheatre = {
 	key: "83396268239eeacdafdf592b8d16a83d",
@@ -17,14 +34,11 @@ var queryFlickr = function() {
 
 	// Get the query and form URL to access Flickr API	
 	var apiUrl; 
-
 	var queryBox = document.getElementById('search-query');
 	
-
 	// Validate that a search query was received.
 	if(queryBox.value == undefined || queryBox.value == '') {
 		console.log('undefined query value. We will not be searching');
-		// queryBox.style.backgroundColor = '#FFFF99';
 		lengthenQuerybox();
 		return;
 	} else {
@@ -47,46 +61,43 @@ var queryFlickr = function() {
 var createThumbnails = function(data) {
 	// Variables for our images
 	var photo;
-	var thumbnailImg;
+	var thumbImg, thumbTitle;
 
 	// Parse the response data and store into app namespace
 	slackTheatre.photos = JSON.parse(data).photos.photo;
 	console.log(slackTheatre.photos);
 
-	var count = slackTheatre.photos.length
+	var count = slackTheatre.photos.length;
 
-	// Search may have not returned any items. In that case, we need to tell the user
+	// Search may have not returned any items. We may have to inform user of empty set response.
 	if (count == 0) {
 		// Results came up empty, let's give the user something entertaining to read instead.
 		var emptyResponseContainer = document.createElement('div');
-		emptyResponseContainer.setAttribute('class', 'empty');
-
-		emptyResponseContainer.style.border = '8px dashed #eee';
-		emptyResponseContainer.style.textAlign = 'center';
-		emptyResponseContainer.style.height = '50%';
-
+		emptyResponseContainer.setAttribute('class', 'empty-resp-container quarter-vertical center-horizontal' );
 
 		var emptyResponseText = document.createElement('p');
-		emptyResponseText.setAttribute('class', 'empty');
 		var randomInt = Math.floor((Math.random() * slackTheatre.emptyResultsResponses.length));
+		emptyResponseText.setAttribute('class', 'empty-resp quarter-vertical center-horizontal');
 		emptyResponseText.innerHTML = slackTheatre.emptyResultsResponses[randomInt];
 
 		emptyResponseContainer.appendChild(emptyResponseText);
 
 		document.getElementById('container').appendChild(emptyResponseContainer);	
 	} else {
-		// Create thumbnails from response data
+		// Data available. Let's create thumbnails from response data!
 		for(var i=0; i<count; i++) {
 			photo = slackTheatre.photos[i];
 
 			// Create the img thumbnail
-			thumbnailImg = createThumbnailImg(photo);
-			thumbnailImg.setAttribute('data-photoid', i);
-			thumbnailImg.addEventListener('mouseover', showThumbTitle);
-			thumbnailImg.addEventListener('mouseout', hideThumbTitle);
+			thumbImg = createThumbnailImg(photo);
+			thumbImg.setAttribute('data-photoid', i);
+
+			// Hover on thumbnail displays thumb title
+			thumbImg.addEventListener('mouseover', showThumbTitle);
+			thumbImg.addEventListener('mouseout', hideThumbTitle);
 
 			// Create the text title
-			var thumbTitle = document.createElement('p');
+			thumbTitle = document.createElement('p');
 			thumbTitle.setAttribute('class', 'thumbnail-title bottom');		
 
 			if(photo.title.length > 20) {
@@ -98,13 +109,12 @@ var createThumbnails = function(data) {
 			var thumbwrapper = document.createElement('div');
 			thumbwrapper.setAttribute('class', 'thumbnail-wrapper');
 
-			thumbwrapper.appendChild(thumbnailImg);
+			thumbwrapper.appendChild(thumbImg);
 			thumbwrapper.appendChild(thumbTitle);
 
 		    document.getElementById('container').appendChild(thumbwrapper);	
 		}
 	}
-	
 }
 
 var createThumbnailImg = function(photoObj) {
@@ -133,12 +143,18 @@ var lightbox = function() {
 
 	var nextButton = document.getElementById('next');
 	nextButton.addEventListener('click', nextImg);
+
+	// Add keyListener for keyboard navigation
+	window.addEventListener('keyup', keyListenerNav, true);
 }
 
 var closeLightbox = function() {
 	console.log("Closing lightbox...");
 
 	clearLightbox();
+
+	// Remove keyListener, it is only necessary on opening of lb.
+	window.removeEventListener('keyup', keyListenerNav, true);
 
 	document.getElementById('light').style.display = 'none';
 	document.getElementById('fade').style.display = 'none';
@@ -158,30 +174,8 @@ var clearLightbox = function() {
 	}
 }
 
-var prevImg = function() {
-	console.log('Loading previous image...');
-
-	var lbContent = document.getElementsByClassName('lightbox-img')[0];
-	var photoId = Number(lbContent.getAttribute('data-photoid')) - 1;
-
-	clearLightbox();
-	loadLbContent(photoId);
-}
-
-var nextImg = function() {
-	console.log('Loading next image...');
-
-	var lbContent = document.getElementsByClassName('lightbox-img')[0];
-	var photoId = Number(lbContent.getAttribute('data-photoid')) + 1;
-
-	clearLightbox();
-	loadLbContent(photoId);
-}
-
-
 /* Loads the lightbox image as well as navigation buttons */
 var loadLbContent = function(photoId) {
-
 	// Clear any residual lb_content
 	clearLightbox();
 
@@ -202,7 +196,7 @@ var loadLbContent = function(photoId) {
 	lbContent.appendChild(content);
 	lbContent.appendChild(lbTitle);
 
-	// Navigation of lightbox
+	// Lightbox navigation
 	var prevButton = document.getElementById('prev');
 	var nextButton = document.getElementById('next');
 
@@ -222,48 +216,11 @@ var loadLbContent = function(photoId) {
 }
 
 var showThumbTitle = function() {
-	var myTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
-	myTitle.style.visibility = 'visible';
+	var thumbTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
+	thumbTitle.style.visibility = 'visible';
 }
 
 var hideThumbTitle = function() {
-	var myTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
-	myTitle.style.visibility = 'hidden';
-}
-
-var lengthenQuerybox = function() {
-	var queryBox = document.getElementById('search-query');
-	var pos = 200;
-	var id = setInterval(frame, 5);
-	function frame() {
-	  if (pos == 250) {
-	    clearInterval(id);
-	  } else {
-	    pos++; 
-	    queryBox.style.width = pos + 'px'; 
-	  }
-	}
-
-	queryBox.style.backgroundColor = '#FFFF99';
-}
-
-var shortenQuerybox = function() {
-	var queryBox = document.getElementById('search-query');
-	var pos = Number(queryBox.offsetWidth);
-	console.log(pos);
-	if (pos == 200) {
-		return;
-	}
-
-	var id = setInterval(frame, 5);
-	function frame() {
-	  if (pos == 200) {
-	    clearInterval(id);
-	  } else {
-	    pos--; 
-	    queryBox.style.width = pos + 'px'; 
-	  }
-	}
-
-	queryBox.style.backgroundColor = 'white';
+	var thumbTitle = document.getElementsByClassName('thumbnail-title')[this.getAttribute('data-photoid')];
+	thumbTitle.style.visibility = 'hidden';
 }

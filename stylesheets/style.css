@@ -51,17 +51,27 @@ input, textarea, select {
     outline: 0;
 }
 
+/* Placeholder transition. Browser manufacturers handle differently */
+#search-query::-webkit-input-placeholder       {line-height: 20px;  transition: line-height 0.5s ease;}
+#search-query::-moz-placeholder                {line-height: 20px;  transition: line-height 0.5s ease;}
+#search-query:-moz-placeholder                 {line-height: 20px;  transition: line-height 0.5s ease;}
+#search-query:-ms-input-placeholder            {line-height: 20px;  transition: line-height 0.5s ease;}
+#search-query:focus::-webkit-input-placeholder {line-height: 100px; transition: line-height 0.5s ease;}
+#search-query:focus::-moz-placeholder          {line-height: 100px; transition: line-height 0.5s ease;}
+#search-query:focus:-moz-placeholder           {line-height: 100px; transition: line-height 0.5s ease;}
+#search-query:focus:-ms-input-placeholder      {line-height: 100px; transition: line-height 0.5s ease;}
+
 .search-button {
     display: inline-block;
-    width: 50px;
-    text-align: center;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     line-height: 1;
     margin: 0 0 0 -84px;
-    -webkit-border-radius: 16px;
     border-radius: 16px;
     background-color: #eee  ;
+    width: 50px;
+    text-align: center;
+    -webkit-border-radius: 16px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .search-button:focus {
@@ -70,11 +80,6 @@ input, textarea, select {
 
 .container {
     padding: 10px;
-}
-
-.center {
-    display: inline-block;
-    margin: 0 auto;
 }
 
 .lb-overlay {
@@ -99,7 +104,7 @@ input, textarea, select {
     border: 4px solid gray;
     background-color: white;
     z-index: 1002;
-    overflow: scroll;
+    overflow: hidden;
 }
 
 .lb-title {
@@ -171,14 +176,39 @@ input, textarea, select {
 
 .nav-next {
     right: 0;
+}
 
+.empty-resp-container { 
+    position: absolute;
+    border: 8px dashed #eee;
+    text-align: center;
+    width: 50%;
+    height: 50%;
+    top: 25%;
+}
+
+p.empty-resp {
+    width: 100%;
 }
 
 .center-vertical {
+    position: absolute;
     top: 50%;
     -webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
+}
+
+.third-vertical {
+
+}
+
+.quarter-vertical {
+    position: absolute;
+    top: 25%;
+    -webkit-transform: translateY(-25%);
+    -ms-transform: translateY(-25%);
+    transform: translateY(-25%);
 }
 
 .center-horizontal {
@@ -196,12 +226,6 @@ input, textarea, select {
 
 }
 
-.more-bottom {
-    top: 120%;
-    -webkit-transform: translateY(-120%);
-    -ms-transform: translateY(-120%);
-    transform: translateY(-120%);
-}
 /* Responsive design:; screen specifics */
 @media only screen and (max-width : 480px) {
    /* smartphone view: 1 tile */
